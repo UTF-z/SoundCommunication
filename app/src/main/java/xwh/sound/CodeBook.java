@@ -13,24 +13,26 @@ import android.util.Log;
 
 public class CodeBook {
 
-	public static final int CODE_BOOK_LENGTH_CONTENT = 8;  // 内容编码长度 （0-7为内容）
-	public static final int DUPLICATE_INDEX_1 = CODE_BOOK_LENGTH_CONTENT; // 重复标记1
-	public static final int DUPLICATE_INDEX_2 = DUPLICATE_INDEX_1 +1; // 重复标记2
-	public static final int END_INDEX = DUPLICATE_INDEX_2 + 1;   // 开始标记
-	public static final int START_INDEX = END_INDEX + 1;   // 结束标记
 
-	public static final int SEP_INDEX = START_INDEX + 1; // 分割符
+	public static int CODE_BOOK_LENGTH_CONTENT = 8;  // 内容编码长度 （0-7为内容）
+	public static int DUPLICATE_INDEX_1 = CODE_BOOK_LENGTH_CONTENT; // 重复标记1
+	public static int DUPLICATE_INDEX_2 = DUPLICATE_INDEX_1 +1; // 重复标记2
+	public static int END_INDEX = DUPLICATE_INDEX_2 + 1;   // 开始标记
+	public static int START_INDEX = END_INDEX + 1;   // 结束标记
 
-	public static int freqDistance = 200;  // 两个频率之间的间距
-	public static final int START_INDEX_HAMMING = 4;
-	public static final int END_INDEX_HAMMING = 6;
-	public static final int DUPLICATE_INDEX_1_HAMMING = 5;
-	public static final int DUPLICATE_INDEX_2_HAMMING = 7;
-	public static final int BASE_FREQ = 10000;
-	public static final int START_FREQ_HAMMING = BASE_FREQ + freqDistance * START_INDEX_HAMMING;
-	public static final int END_FREQ_HAMMING = BASE_FREQ + freqDistance * END_INDEX_HAMMING;
-	public static final int DUP1_FREQ_HAMMING = BASE_FREQ + freqDistance * DUPLICATE_INDEX_1_HAMMING;
-	public static final int DUP2_FREQ_HAMMING = BASE_FREQ + freqDistance * DUPLICATE_INDEX_2_HAMMING;
+	public static int SEP_INDEX = START_INDEX + 1; // 分割符
+
+	//public static int freqDistance = MainActivity.FREQ_DISTANCE;  // 两个频率之间的间距
+	public static int START_INDEX_HAMMING = 4;
+	public static int END_INDEX_HAMMING = 6;
+	public static int DUPLICATE_INDEX_1_HAMMING = 5;
+	public static int DUPLICATE_INDEX_2_HAMMING = 7;
+	//public static int BASE_FREQ = MainActivity.BASE_FREQ;
+	//public static int START_FREQ_HAMMING = BASE_FREQ + freqDistance * START_INDEX_HAMMING;
+	//public static int END_FREQ_HAMMING = BASE_FREQ + freqDistance * END_INDEX_HAMMING;
+	//public static int DUP1_FREQ_HAMMING = BASE_FREQ + freqDistance * DUPLICATE_INDEX_1_HAMMING;
+	//public static int DUP2_FREQ_HAMMING = BASE_FREQ + freqDistance * DUPLICATE_INDEX_2_HAMMING;
+
 
 	/**
 	 * 两个book字典码来组成下面每个字符的编码
@@ -41,7 +43,7 @@ public class CodeBook {
 
 	static {
 		for(int i=0; i<freqsWave.length; i++) {
-			freqsWave[i] = BASE_FREQ + freqDistance * i;
+			freqsWave[i] = MainActivity.BASE_FREQ + MainActivity.FREQ_DISTANCE * i;
 		}
 	}
 
@@ -55,16 +57,16 @@ public class CodeBook {
 
 	public static int encode_74hamming(int index) {
 		if (index == START_INDEX_HAMMING) {
-			return START_FREQ_HAMMING;
+			return MainActivity.BASE_FREQ+MainActivity.FREQ_DISTANCE * START_INDEX_HAMMING;
 		}
 		if (index == END_INDEX_HAMMING) {
-			return END_FREQ_HAMMING;
+			return MainActivity.BASE_FREQ + MainActivity.FREQ_DISTANCE * END_INDEX_HAMMING;
 		}
-		if (index == DUP1_FREQ_HAMMING) {
-			return DUP1_FREQ_HAMMING;
+		if (index == MainActivity.BASE_FREQ + MainActivity.FREQ_DISTANCE * DUPLICATE_INDEX_1_HAMMING) {
+			return MainActivity.BASE_FREQ + MainActivity.FREQ_DISTANCE * DUPLICATE_INDEX_1_HAMMING;
 		}
-		if (index == DUP2_FREQ_HAMMING) {
-			return DUP2_FREQ_HAMMING;
+		if (index == MainActivity.BASE_FREQ + MainActivity.FREQ_DISTANCE * DUPLICATE_INDEX_2_HAMMING) {
+			return MainActivity.BASE_FREQ + MainActivity.FREQ_DISTANCE * DUPLICATE_INDEX_2_HAMMING;
 		}
 		int freq_idx = _inv_gray(index, 2);
 		return freqsWave[index];
@@ -97,7 +99,7 @@ public class CodeBook {
 	public static int decode(int fre) {
 		int index = -1;
 
-		if ( fre + freqDistance > freqsWave[0]) {   // 太小的不要
+		if ( fre + MainActivity.FREQ_DISTANCE > freqsWave[0]) {   // 太小的不要
 			int min = Integer.MAX_VALUE;
 			for(int i=0; i<freqsWave.length; i++) {
 				int distance = Math.abs(fre - freqsWave[i]);
